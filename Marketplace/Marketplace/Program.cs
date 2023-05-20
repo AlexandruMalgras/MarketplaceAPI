@@ -1,4 +1,6 @@
 using Marketplace.Configurations;
+using Marketplace.Controllers;
+using Marketplace.Executors;
 using Marketplace.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -11,11 +13,15 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
 builder.Services.AddDbContext<DatabaseConfiguration>();
 builder.Services.AddIdentity<Users, IdentityRole>()
     .AddEntityFrameworkStores<DatabaseConfiguration>()
     .AddDefaultTokenProviders();
 builder.Services.AddTransient<InitialDataSeeder>();
+
+builder.Services.AddScoped<UsersQueryExecutor>();
+builder.Services.AddScoped<AuthQueryExecutor>();
 
 var app = builder.Build();
 
@@ -28,6 +34,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
