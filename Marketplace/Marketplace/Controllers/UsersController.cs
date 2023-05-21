@@ -8,6 +8,7 @@ using System.Security.Claims;
 
 namespace Marketplace.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class UsersController : ControllerBase

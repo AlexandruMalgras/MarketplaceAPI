@@ -2,10 +2,14 @@ using Marketplace.Configurations;
 using Marketplace.Controllers;
 using Marketplace.Executors;
 using Marketplace.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+var config = new ConfigurationBuilder().AddJsonFile(Environment.CurrentDirectory + "/JWTBearer.json").Build();
 
 // Add services to the container.
 
@@ -22,6 +26,25 @@ builder.Services.AddTransient<InitialDataSeeder>();
 
 builder.Services.AddScoped<UsersQueryExecutor>();
 builder.Services.AddScoped<AuthQueryExecutor>();
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = config["JWTBearer:Issuer"],
+        ValidAudience = config["JWTBearer:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["JWTBearer:Key"]))
+    };
+});
 
 var app = builder.Build();
 

@@ -2,6 +2,7 @@
 using Marketplace.Models;
 using Marketplace.TransferObjects;
 using Microsoft.AspNetCore.Mvc;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace Marketplace.Controllers
 {
@@ -43,8 +44,11 @@ namespace Marketplace.Controllers
 
             if (result.Succeeded)
             {
-                // will return bearer token
-                return Ok();
+                var token = await authQueryExecutor.GenerateJSONWebToken(transfer.UserName);
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var serializedToken = tokenHandler.WriteToken(token);
+
+                return Ok(new { JsonWebToken = serializedToken });
             }
 
             return BadRequest("Incorrect username or password.");
