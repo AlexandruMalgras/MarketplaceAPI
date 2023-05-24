@@ -12,17 +12,17 @@ namespace Marketplace.Controllers
     [Route("api/[controller]")]
     public class AdminUsersController : ControllerBase
     {
-        private UsersQueryExecutor queryExecutor;
+        private UsersQueryExecutor usersQueryExecutor;
 
-        public AdminUsersController(UsersQueryExecutor queryExecutor)
+        public AdminUsersController(UsersQueryExecutor usersQueryExecutor)
         {
-            this.queryExecutor = queryExecutor;
+            this.usersQueryExecutor = usersQueryExecutor;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetUsersAsync()
         {
-            var users = await queryExecutor.ReadUsersAsync();
+            var users = await usersQueryExecutor.ReadUsersAsync();
 
             if (users != null)
             {
@@ -35,7 +35,7 @@ namespace Marketplace.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetUserAsync(string id)
         {
-            var user = await queryExecutor.ReadUserAsync(id);
+            var user = await usersQueryExecutor.ReadUserAsync(id);
 
             if (user != null)
             {
@@ -48,11 +48,11 @@ namespace Marketplace.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUserAsync(string id)
         {
-            var user = await queryExecutor.ReadUserAsync(id);
+            var user = await usersQueryExecutor.ReadUserAsync(id);
 
             if (user != null)
             {
-                var result = await queryExecutor.DeleteUserAsync(user);
+                var result = await usersQueryExecutor.DeleteUserAsync(user);
 
                 return NoContent();
             }
@@ -63,13 +63,13 @@ namespace Marketplace.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateUserAsync(string id, [FromBody] UpdateUserTransferObject transfer)
         {
-            var user = await queryExecutor.ReadUserAsync(id);
+            var user = await usersQueryExecutor.ReadUserAsync(id);
 
             if (user != null)
             {
-                var result = await queryExecutor.UpdateUserAsync(user, transfer);
+                var result = await usersQueryExecutor.UpdateUserAsync(user, transfer);
 
-                user = await queryExecutor.ReadUserAsync(id);
+                user = await usersQueryExecutor.ReadUserAsync(id);
 
                 return Ok(user);
             }

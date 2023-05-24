@@ -8,8 +8,11 @@ namespace Marketplace.Models
 
         public string LastName { get; set; }
 
+        public DateTime CreationTime { get; set; }
+
         public ICollection<Reviews> Reviews { get; set; }
         public ICollection<Products> Products { get; set; }
         public ICollection<Orders> Orders { get; set; }
+        public ICollection<UserActions> UserActions { get; set; }
     }
 }

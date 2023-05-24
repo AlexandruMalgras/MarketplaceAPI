@@ -22,7 +22,12 @@ namespace Marketplace.Controllers
         [HttpPost("create")]
         public async Task<IActionResult> PostUserAsync([FromBody] CreateUserTransferObject transfer)
         {
-            var newUser = new Users { UserName = transfer.UserName, Email = transfer.Email, PhoneNumber = transfer.PhoneNumber, FirstName = transfer.FirstName, LastName = transfer.LastName };
+            var newUser = new Users { UserName = transfer.UserName,
+                Email = transfer.Email,
+                PhoneNumber = transfer.PhoneNumber,
+                FirstName = transfer.FirstName,
+                LastName = transfer.LastName,
+                CreationTime = DateTime.Now };
 
             var result = await authQueryExecutor.CreateUserAsync(newUser, transfer.Password);
 

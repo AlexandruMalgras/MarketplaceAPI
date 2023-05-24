@@ -27,7 +27,7 @@ namespace Marketplace.Configurations
                 }
             }
 
-            var adminUser = new Users { UserName = "AdminUser", Email = "admin@example.com" };
+            var adminUser = new Users { UserName = "AdminUser", Email = "admin@example.com", CreationTime = DateTime.Now };
             var result = await this.userManager.CreateAsync(adminUser, "SecurePassword123!");
 
             if (result.Succeeded)

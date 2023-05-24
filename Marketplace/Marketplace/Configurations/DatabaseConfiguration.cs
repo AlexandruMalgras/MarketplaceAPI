@@ -10,6 +10,7 @@ namespace Marketplace.Configurations
         private IConfiguration configuration;
 
         public DbSet<Users> Users { get; set; }
+        public DbSet<UserActions> UserActions { get; set; }
         public DbSet<Products> Products { get; set; }
         public DbSet<Orders> Orders { get; set; }
         public DbSet<OrderItems> OrderItems { get; set; }
