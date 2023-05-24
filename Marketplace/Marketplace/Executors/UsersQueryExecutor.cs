@@ -3,6 +3,8 @@ using Marketplace.Models;
 using Marketplace.TransferObjects;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using System.ComponentModel;
 using System.Security.Claims;
 
 namespace Marketplace.Executors
@@ -16,17 +18,22 @@ namespace Marketplace.Executors
             this.userManager = userManager;
         }
 
-        public async Task<Users?> ReadUser(string id)
+        public async Task<Users?> ReadUserAsync(string id)
         {
             return await userManager.FindByIdAsync(id);
         }
 
-        public async Task<IdentityResult> DeleteUser(Users user)
+        public async Task<List<Users>> ReadUsersAsync()
+        {
+            return await userManager.Users.ToListAsync();
+        }
+
+        public async Task<IdentityResult> DeleteUserAsync(Users user)
         {           
             return await userManager.DeleteAsync(user);
         }
 
-        public async Task<IdentityResult> UpdateUser(Users user, UpdateUserTransferObject updateUser)
+        public async Task<IdentityResult> UpdateUserAsync(Users user, UpdateUserTransferObject updateUser)
         {
             user.Email = updateUser.Email ?? user.Email;
             user.PhoneNumber = updateUser.PhoneNumber ?? user.PhoneNumber;
@@ -36,7 +43,7 @@ namespace Marketplace.Executors
             return await userManager.UpdateAsync(user);
         }
 
-        public async Task<IdentityResult> UpdateUserPassword(Users user, string password)
+        public async Task<IdentityResult> UpdateUserPasswordAsync(Users user, string password)
         {
             var token = await userManager.GeneratePasswordResetTokenAsync(user);
 

@@ -20,15 +20,15 @@ namespace Marketplace.Controllers
         }
 
         [HttpPost("create")]
-        public async Task<IActionResult> PostUser([FromBody] CreateUserTransferObject transfer)
+        public async Task<IActionResult> PostUserAsync([FromBody] CreateUserTransferObject transfer)
         {
             var newUser = new Users { UserName = transfer.UserName, Email = transfer.Email, PhoneNumber = transfer.PhoneNumber, FirstName = transfer.FirstName, LastName = transfer.LastName };
 
-            var result = await authQueryExecutor.CreateUser(newUser, transfer.Password);
+            var result = await authQueryExecutor.CreateUserAsync(newUser, transfer.Password);
 
             if (result.Succeeded)
             {
-                return Created("/api/Auth/" + newUser.Id, usersQueryExecutor.ReadUser(newUser.Id));
+                return Created("/api/Auth/" + newUser.Id, usersQueryExecutor.ReadUserAsync(newUser.Id));
             }
             else
             {
@@ -38,13 +38,13 @@ namespace Marketplace.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> LoginUser([FromBody] LoginUserTransferObject transfer)
+        public async Task<IActionResult> LoginUserAsync([FromBody] LoginUserTransferObject transfer)
         {
-            var result = await authQueryExecutor.LoginUser(transfer.UserName, transfer.Password);
+            var result = await authQueryExecutor.LoginUserAsync(transfer.UserName, transfer.Password);
 
             if (result.Succeeded)
             {
-                var token = await authQueryExecutor.GenerateJSONWebToken(transfer.UserName);
+                var token = await authQueryExecutor.GenerateJSONWebTokenAsync(transfer.UserName);
                 var tokenHandler = new JwtSecurityTokenHandler();
                 var serializedToken = tokenHandler.WriteToken(token);
 

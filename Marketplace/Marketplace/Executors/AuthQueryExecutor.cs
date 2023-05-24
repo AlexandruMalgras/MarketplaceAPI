@@ -21,7 +21,7 @@ namespace Marketplace.Executors
             config = new ConfigurationBuilder().AddJsonFile(Environment.CurrentDirectory + "/JWTBearer.json").Build();
         }
 
-        public async Task<IdentityResult> CreateUser(Users user, string password)
+        public async Task<IdentityResult> CreateUserAsync(Users user, string password)
         {
             var result = await userManager.CreateAsync(user, password);
 
@@ -33,7 +33,7 @@ namespace Marketplace.Executors
             return result;
         }
 
-        public async Task<SignInResult> LoginUser(string username, string password)
+        public async Task<SignInResult> LoginUserAsync(string username, string password)
         {
             var user = await userManager.FindByNameAsync(username);
 
@@ -45,7 +45,7 @@ namespace Marketplace.Executors
             return await signInManager.PasswordSignInAsync(user, password, false, false);
         }
 
-        public async Task<JwtSecurityToken> GenerateJSONWebToken(string username)
+        public async Task<JwtSecurityToken> GenerateJSONWebTokenAsync(string username)
         {
             var user = await userManager.FindByNameAsync(username);
 
@@ -53,10 +53,14 @@ namespace Marketplace.Executors
 
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
-            var claims = new[]
+            var userRole = await userManager.GetRolesAsync(user);
+
+            var claims = new List<Claim>
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id)
             };
+
+            claims.AddRange(userRole.Select(r => new Claim(ClaimTypes.Role, r)));
 
             var token = new JwtSecurityToken(config["JWTBearer:Issuer"],
                 config["JWTBearer:Audience"],

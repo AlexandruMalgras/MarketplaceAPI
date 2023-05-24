@@ -21,53 +21,49 @@ namespace Marketplace.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetUser()
+        public async Task<IActionResult> GetUserAsync()
         {
             var id = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            var user = await queryExecutor.ReadUser(id);
+            var user = await queryExecutor.ReadUserAsync(id);
 
             if (user != null)
             {
                 return Ok(user);
             }
-            else
-            {
-                return NotFound("No user with id " + id + " exists.");
-            }
+
+            return NotFound("No user with id " + id + " exists.");
         }
 
         [HttpDelete]
-        public async Task<IActionResult> DeleteUser()
+        public async Task<IActionResult> DeleteUserAsync()
         {
             var id = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            var user = await queryExecutor.ReadUser(id);
+            var user = await queryExecutor.ReadUserAsync(id);
 
             if (user != null)
             {
-                var result = await queryExecutor.DeleteUser(user);
+                var result = await queryExecutor.DeleteUserAsync(user);
 
                 return NoContent();
             }
-            else
-            {
-                return NotFound("No user with id " + id + " exists.");
-            }
+            
+            return NotFound("No user with id " + id + " exists.");
         }
 
         [HttpPut]
-        public async Task<IActionResult> UpdateUser([FromBody] UpdateUserTransferObject transfer)
+        public async Task<IActionResult> UpdateUserAsync([FromBody] UpdateUserTransferObject transfer)
         {
             var id = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            var user = await queryExecutor.ReadUser(id);
+            var user = await queryExecutor.ReadUserAsync(id);
 
             if (user != null)
             {
-                var result = await queryExecutor.UpdateUser(user, transfer);
+                var result = await queryExecutor.UpdateUserAsync(user, transfer);
 
-                user = await queryExecutor.ReadUser(id);
+                user = await queryExecutor.ReadUserAsync(id);
 
                 return Ok(user);
             }
@@ -76,15 +72,15 @@ namespace Marketplace.Controllers
         }
 
         [HttpPut("password")]
-        public async Task<IActionResult> UpdateUserPassword([FromBody] UpdateUserPasswordTransferObject transfer)
+        public async Task<IActionResult> UpdateUserPasswordAsync([FromBody] UpdateUserPasswordTransferObject transfer)
         {
             var id = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            var user = await queryExecutor.ReadUser(id);
+            var user = await queryExecutor.ReadUserAsync(id);
 
             if (user != null)
             {
-                var result = await queryExecutor.UpdateUserPassword(user, transfer.Password);
+                var result = await queryExecutor.UpdateUserPasswordAsync(user, transfer.Password);
 
                 if (result.Succeeded)
                 {
