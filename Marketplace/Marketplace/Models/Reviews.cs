@@ -8,18 +8,9 @@ namespace Marketplace.Models
         [Key]
         public int ReviewId { get; set; }
 
-        [ForeignKey("Products")]
-        public int ProductId { get; set; }
-        public Products Product { get; set; }
-
-        [ForeignKey("Users")]
-        public string UserId { get; set; }
-        public Users User { get; set; }
-
         [Required]
         public int Rating { get; set; }
 
-        [Required]
-        public string Comment { get; set; }
+        public string? Comment { get; set; }
     }
 }

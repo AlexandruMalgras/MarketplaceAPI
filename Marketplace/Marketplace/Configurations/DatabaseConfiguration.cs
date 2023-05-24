@@ -30,20 +30,5 @@ namespace Marketplace.Configurations
             optionsBuilder
                 .UseSqlServer(@"Server=" + dbName + ";Database=Marketplace;Trusted_Connection=True;TrustServerCertificate=true;");
         }
-
-        protected override void OnModelCreating(ModelBuilder builder)
-        {
-            base.OnModelCreating(builder);
-
-            builder.Entity<Orders>()
-                .HasOne(o => o.User)
-                .WithMany(u => u.Orders)  
-                .OnDelete(DeleteBehavior.Restrict);
-
-            builder.Entity<Products>()
-                .HasOne(o => o.User)
-                .WithMany(u => u.Products)
-                .OnDelete(DeleteBehavior.Restrict);
-        }
     }
 }

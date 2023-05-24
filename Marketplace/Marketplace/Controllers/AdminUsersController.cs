@@ -1,4 +1,5 @@
 ﻿using Marketplace.Executors;
+using Marketplace.Models;
 using Marketplace.TransferObjects;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -22,14 +23,9 @@ namespace Marketplace.Controllers
         [HttpGet]
         public async Task<IActionResult> GetUsersAsync()
         {
-            var users = await usersQueryExecutor.ReadUsersAsync();
+            var users = await usersQueryExecutor.ReadUsersAsync() ?? new List<Users>();
 
-            if (users != null)
-            {
-                return Ok(new { users = users });
-            }
-
-            return NotFound("No users were found.");
+            return StatusCode(200, new { users = users });
         }
 
         [HttpGet("{id}")]
@@ -37,12 +33,12 @@ namespace Marketplace.Controllers
         {
             var user = await usersQueryExecutor.ReadUserAsync(id);
 
-            if (user != null)
+            if (user == null)
             {
-                return Ok(user);
+                return StatusCode(404, "No user with id " + id + " exists.");
             }
 
-            return NotFound("No user with id " + id + " exists.");
+            return StatusCode(200, user);
         }
 
         [HttpDelete("{id}")]
@@ -50,14 +46,21 @@ namespace Marketplace.Controllers
         {
             var user = await usersQueryExecutor.ReadUserAsync(id);
 
-            if (user != null)
+            if (user == null)
             {
-                var result = await usersQueryExecutor.DeleteUserAsync(user);
 
-                return NoContent();
+                return StatusCode(404, "No user with id " + id + " exists.");
             }
 
-            return NotFound("No user with id " + id + " exists.");
+            var result = await usersQueryExecutor.DeleteUserAsync(user);
+
+            if (!result.Succeeded)
+            {
+                var errors = result.Errors.Select(e => e.Description);
+                return StatusCode(500, errors);
+            }
+
+            return StatusCode(204);
         }
 
         [HttpPut("{id}")]
@@ -65,16 +68,21 @@ namespace Marketplace.Controllers
         {
             var user = await usersQueryExecutor.ReadUserAsync(id);
 
-            if (user != null)
+            if (user == null)
             {
-                var result = await usersQueryExecutor.UpdateUserAsync(user, transfer);
-
-                user = await usersQueryExecutor.ReadUserAsync(id);
-
-                return Ok(user);
+                return StatusCode(404, "No user with id " + id + " exists.");
             }
 
-            return NotFound("No user with id " + id + " exists.");
+            var result = await usersQueryExecutor.UpdateUserAsync(user, transfer);
+
+            user = await usersQueryExecutor.ReadUserAsync(id);
+
+            if (user == null)
+            {
+                return StatusCode(500, "An error occured while retrieving the user.");
+            }
+
+            return StatusCode(200, user);
         }
     }
 }

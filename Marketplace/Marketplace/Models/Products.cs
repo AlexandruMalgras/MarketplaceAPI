@@ -5,6 +5,12 @@ namespace Marketplace.Models
 {
     public class Products
     {
+        public Products() 
+        {
+            this.Reviews = new List<Reviews>();
+            this.OrderItems = new List<OrderItems>();
+        }
+
         [Key]
         public int ProductId { get; set; }
 
@@ -16,10 +22,6 @@ namespace Marketplace.Models
 
         [Required]
         public decimal Price { get; set; }
-
-        [ForeignKey("Users")]
-        public string UserId { get; set; }
-        public Users User { get; set; }
 
         public ICollection<Reviews> Reviews { get; set; }
         public ICollection<OrderItems> OrderItems { get; set; }

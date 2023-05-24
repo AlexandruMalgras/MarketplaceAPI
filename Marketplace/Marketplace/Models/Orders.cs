@@ -1,16 +1,16 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Marketplace.Models
 {
     public class Orders
     {
+        public Orders()
+        {
+            this.OrderItems = new List<OrderItems>();
+        }
+
         [Key]
         public int OrderId { get; set; }
-
-        [ForeignKey("Users")]
-        public string UserId { get; set; }
-        public Users User { get; set; }
 
         [Required]
         public DateTime OrderDate { get; set; }

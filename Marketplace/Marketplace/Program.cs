@@ -26,6 +26,12 @@ builder.Services.AddTransient<InitialDataSeeder>();
 
 builder.Services.AddScoped<UsersQueryExecutor>();
 builder.Services.AddScoped<AuthQueryExecutor>();
+builder.Services.AddScoped<UserActionsQueryExecutor>();
+
+builder.Services.AddControllers(options =>
+{
+    options.Filters.Add(typeof(UserActionLoggingActionFilter));
+});
 
 builder.Services.AddAuthentication(options =>
 {

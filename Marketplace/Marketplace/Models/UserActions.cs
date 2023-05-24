@@ -8,13 +8,6 @@ namespace Marketplace.Models
         [Key]
         public int UserActionId { get; set; }
 
-        [ForeignKey("Users")]
-        public string UserId { get; set; }
-        public Users User { get; set; }
-
-        [Required]
-        public string Action { get; set; }
-
         [Required]
         public string Method { get; set; }
 

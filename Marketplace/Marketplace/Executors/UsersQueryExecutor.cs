@@ -1,21 +1,20 @@
 ﻿using Marketplace.Configurations;
 using Marketplace.Models;
 using Marketplace.TransferObjects;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System.ComponentModel;
-using System.Security.Claims;
 
 namespace Marketplace.Executors
 {
     public class UsersQueryExecutor
     {
         private readonly UserManager<Users> userManager;
+        private readonly DatabaseConfiguration context;
 
-        public UsersQueryExecutor(UserManager<Users> userManager)
+        public UsersQueryExecutor(UserManager<Users> userManager, DatabaseConfiguration databaseConfiguration)
         {
             this.userManager = userManager;
+            this.context = databaseConfiguration;
         }
 
         public async Task<Users?> ReadUserAsync(string id)
@@ -29,7 +28,16 @@ namespace Marketplace.Executors
         }
 
         public async Task<IdentityResult> DeleteUserAsync(Users user)
-        {           
+        {
+            var userWithActions = await context.Users.Include(u => u.UserActions).SingleOrDefaultAsync(u => u.Id == user.Id);
+
+            if (userWithActions != null)
+            {
+                context.UserActions.RemoveRange(userWithActions.UserActions);
+
+                await context.SaveChangesAsync();
+            }
+
             return await userManager.DeleteAsync(user);
         }
 

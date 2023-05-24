@@ -31,15 +31,20 @@ namespace Marketplace.Controllers
 
             var result = await authQueryExecutor.CreateUserAsync(newUser, transfer.Password);
 
-            if (result.Succeeded)
-            {
-                return Created("/api/Auth/" + newUser.Id, usersQueryExecutor.ReadUserAsync(newUser.Id));
-            }
-            else
+            if (!result.Succeeded)
             {
                 var errors = result.Errors.Select(t => t.Description);
-                return BadRequest(errors);
+                return StatusCode(400, errors);
             }
+
+            var user = await usersQueryExecutor.ReadUserAsync(newUser.Id);
+
+            if (user == null)
+            {
+                return StatusCode(500, "An error occured while retrieving the user.");
+            }
+
+            return StatusCode(201, user);
         }
 
         [HttpPost("login")]
@@ -47,16 +52,16 @@ namespace Marketplace.Controllers
         {
             var result = await authQueryExecutor.LoginUserAsync(transfer.UserName, transfer.Password);
 
-            if (result.Succeeded)
+            if (!result.Succeeded)
             {
-                var token = await authQueryExecutor.GenerateJSONWebTokenAsync(transfer.UserName);
-                var tokenHandler = new JwtSecurityTokenHandler();
-                var serializedToken = tokenHandler.WriteToken(token);
-
-                return Ok(new { JsonWebToken = serializedToken });
+                return StatusCode(400, "Incorrect username or password.");
             }
 
-            return BadRequest("Incorrect username or password.");
+            var token = await authQueryExecutor.GenerateJSONWebTokenAsync(transfer.UserName);
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var serializedToken = tokenHandler.WriteToken(token);
+
+            return StatusCode(200, new { JsonWebToken = serializedToken });
         }
     }
 }
