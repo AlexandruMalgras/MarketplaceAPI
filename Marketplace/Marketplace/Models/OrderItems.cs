@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Marketplace.Models
 {
@@ -8,10 +7,8 @@ namespace Marketplace.Models
         [Key]
         public int OrderItemId { get; set; }
 
-        [Required]
         public int Quantity { get; set; }
 
-        [Required]
         public decimal Price { get; set; }
     }
 }

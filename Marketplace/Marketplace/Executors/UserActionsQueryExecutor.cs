@@ -13,13 +13,14 @@ namespace Marketplace.Executors
             this.userManager = userManager;
         }
 
-        public async Task<IdentityResult> CreateUserActionAsync(Users user, string method, string uri, string result)
+        public async Task<IdentityResult> CreateUserActionAsync(Users user, string method, string uri, int statusCode, string? exception)
         {
             user.UserActions.Add(new UserActions
             {
                 Method = method,
                 Uri = uri,
-                Result = result,
+                StatusCode = statusCode,
+                Exception = exception,
                 ExecutionTime = DateTime.Now
             });
 

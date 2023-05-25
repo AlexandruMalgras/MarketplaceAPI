@@ -4,7 +4,7 @@ using System.Security.Claims;
 
 namespace Marketplace.Configurations
 {
-    public class UserActionLoggingActionFilter : IAsyncActionFilter
+    public class UserActionLoggingActionFilter : IAsyncResultFilter
     {
         private readonly UserActionsQueryExecutor userActionsQueryExecutor;
         private readonly UsersQueryExecutor usersQueryExecutor;
@@ -14,7 +14,8 @@ namespace Marketplace.Configurations
             this.userActionsQueryExecutor = userActionsQueryExecutor;
             this.usersQueryExecutor = usersQueryExecutor;
         }
-        public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
+
+        public async Task OnResultExecutionAsync(ResultExecutingContext context, ResultExecutionDelegate next)
         {
             var executedContext = await next();
 
@@ -23,15 +24,16 @@ namespace Marketplace.Configurations
             if (userIdClaim != null)
             {
                 var user = await usersQueryExecutor.ReadUserAsync(userIdClaim.Value);
+
                 if (user != null)
                 {
-                    var result = executedContext.Exception == null ? "Success" : "Failure";
-
                     await userActionsQueryExecutor.CreateUserActionAsync(
                         user,
                         executedContext.HttpContext.Request.Method,
                         executedContext.HttpContext.Request.Path,
-                        result);
+                        executedContext.HttpContext.Response.StatusCode,
+                        executedContext.Exception?.StackTrace
+                        );
                 }
             }
         }
